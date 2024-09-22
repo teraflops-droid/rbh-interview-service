@@ -1,5 +1,18 @@
 basePath: /
 definitions:
+  model.CardRequest:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      username:
+        type: string
+    type: object
   model.GeneralResponse:
     properties:
       code:
@@ -18,8 +31,8 @@ definitions:
 host: localhost:8080
 info:
   contact:
-    email: fiber@swagger.io
-    name: API Support
+    email: nadthapon1998@gmail.com
+    name: Nadthapon Sukeewadthana
   description: Api documentation
   license:
     name: Apache 2.0
@@ -50,6 +63,138 @@ paths:
       summary: authenticate user
       tags:
       - Authenticate user
+  /v1/api/card/:id:
+    get:
+      consumes:
+      - application/json
+      description: get card with comments.
+      parameters:
+      - description: Card ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: get card with comments
+      tags:
+      - Get card
+  /v1/api/card/create:
+    post:
+      consumes:
+      - application/json
+      description: create card.
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: create new card
+      tags:
+      - Create user
+  /v1/api/card/update:
+    put:
+      consumes:
+      - application/json
+      description: Update a card's details.
+      parameters:
+      - description: Card update request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: Update card
+      tags:
+      - Cards
+  /v1/api/cards:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of cards with pagination.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: Get paginated cards
+      tags:
+      - Cards
+  /v1/api/cards/{id}/archive:
+    patch:
+      consumes:
+      - application/json
+      description: Archive a card by its ID.
+      parameters:
+      - description: Card ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+        "404":
+          description: Card not found
+          schema:
+            $ref: '#/definitions/model.GeneralResponse'
+      summary: Archive card
+      tags:
+      - Cards
   /v1/api/user/register:
     post:
       consumes:

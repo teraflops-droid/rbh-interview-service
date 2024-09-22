@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"github.com/teraflops-droid/rbh-interview-service/exception"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -21,7 +20,9 @@ func NewDatabase(config Config) *gorm.DB {
 	maxPoolOpen, err := strconv.Atoi(config.Get("DATASOURCE_POOL_MAX_CONN"))
 	maxPoolIdle, err := strconv.Atoi(config.Get("DATASOURCE_POOL_IDLE_CONN"))
 	maxPollLifeTime, err := strconv.Atoi(config.Get("DATASOURCE_POOL_LIFE_TIME"))
-	exception.PanicLogging(err)
+	if err != nil {
+		panic(err)
+	}
 
 	loggerDb := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
@@ -36,10 +37,14 @@ func NewDatabase(config Config) *gorm.DB {
 	db, err := gorm.Open(mysql.Open(username+":"+password+"@tcp("+host+":"+port+")/"+dbName+"?parseTime=true"), &gorm.Config{
 		Logger: loggerDb,
 	})
-	exception.PanicLogging(err)
+	if err != nil {
+		panic(err)
+	}
 
 	sqlDB, err := db.DB()
-	exception.PanicLogging(err)
+	if err != nil {
+		panic(err)
+	}
 
 	sqlDB.SetMaxOpenConns(maxPoolOpen)
 	sqlDB.SetMaxIdleConns(maxPoolIdle)

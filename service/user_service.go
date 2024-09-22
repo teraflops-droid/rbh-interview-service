@@ -7,6 +7,6 @@ import (
 )
 
 type UserService interface {
-	Authentication(ctx context.Context, model model.UserModel) entity.User
-	Register(model model.UserModel)
+	Authentication(ctx context.Context, model model.UserModel) (*entity.User, error)
+	Register(ctx context.Context, model model.UserModel) error
 }

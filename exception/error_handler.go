@@ -7,14 +7,15 @@ import (
 )
 
 func ErrorHandler(ctx *fiber.Ctx, err error) error {
-	// Handle validation errors
 	_, validationError := err.(ValidationError)
 	if validationError {
 		data := err.Error()
 		var messages []map[string]interface{}
-		errJson := json.Unmarshal([]byte(data), &messages)
-		PanicLogging(errJson)
 
+		errJson := json.Unmarshal([]byte(data), &messages)
+		if errJson != nil {
+			panic(errJson)
+		}
 		return ctx.Status(fiber.StatusBadRequest).JSON(model.GeneralResponse{
 			Code:    400,
 			Message: "Bad Request",
@@ -22,7 +23,6 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		})
 	}
 
-	// Handle not found errors
 	_, notFoundError := err.(NotFoundError)
 	if notFoundError {
 		return ctx.Status(fiber.StatusNotFound).JSON(model.GeneralResponse{
@@ -32,7 +32,6 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		})
 	}
 
-	// Handle unauthorized errors
 	_, unauthorizedError := err.(UnauthorizedError)
 	if unauthorizedError {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(model.GeneralResponse{
@@ -42,7 +41,6 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		})
 	}
 
-	// General error handler
 	return ctx.Status(fiber.StatusInternalServerError).JSON(model.GeneralResponse{
 		Code:    500,
 		Message: "General Error",

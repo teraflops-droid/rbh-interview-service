@@ -31,7 +31,6 @@ func createTestApp() *fiber.App {
 // setup configuration
 var config = configuration.New("../.env.test")
 var database = configuration.NewDatabase(config)
-var redis = configuration.NewRedis(config)
 
 // repository
 var userRepository = impl.NewUserRepositoryImpl(database)
@@ -45,8 +44,6 @@ var userController = NewUserController(&userService, config)
 var appTest = createTestApp()
 
 func authenticationCreate() map[string]interface{} {
-	userRepository.DeleteAll()
-
 	password, err := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
 	exception.PanicLogging(err)
 	roles := []string{"ROLE_ADMIN", "ROLE_USER"}

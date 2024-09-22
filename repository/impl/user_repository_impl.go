@@ -10,15 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewUserRepositoryImpl(DB *gorm.DB) repository.UserRepository {
-	return &userRepositoryImpl{DB: DB}
-}
-
 type userRepositoryImpl struct {
 	*gorm.DB
 }
 
-func (userRepository *userRepositoryImpl) Create(username string, password string, role string) {
+func NewUserRepositoryImpl(DB *gorm.DB) repository.UserRepository {
+	return &userRepositoryImpl{DB: DB}
+}
+
+// Create creates new user
+func (userRepository *userRepositoryImpl) Create(ctx context.Context, username string, password string, role string) {
 	userRole := entity.UserRole{
 		Id:       uuid.New(),
 		Username: username,
@@ -31,15 +32,11 @@ func (userRepository *userRepositoryImpl) Create(username string, password strin
 		IsActive:  true,
 		UserRoles: userRole,
 	}
-	err := userRepository.DB.Create(&user).Error
+	err := userRepository.DB.WithContext(ctx).Create(&user).Error
 	exception.PanicLogging(err)
 }
 
-func (userRepository *userRepositoryImpl) DeleteAll() {
-	err := userRepository.DB.Where("1=1").Delete(&entity.User{}).Error
-	exception.PanicLogging(err)
-}
-
+// Authentication authen user in db
 func (userRepository *userRepositoryImpl) Authentication(ctx context.Context, username string) (entity.User, error) {
 	var userResult entity.User
 	result := userRepository.DB.WithContext(ctx).

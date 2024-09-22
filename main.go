@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
+	"github.com/teraflops-droid/rbh-interview-service/common/logger"
 	"github.com/teraflops-droid/rbh-interview-service/configuration"
 	"github.com/teraflops-droid/rbh-interview-service/controller"
 	_ "github.com/teraflops-droid/rbh-interview-service/docs"
@@ -13,30 +15,40 @@ import (
 	service "github.com/teraflops-droid/rbh-interview-service/service/impl"
 )
 
-//	@title			RBH-Interview APIs
-//	@version		1.0
-//	@description	Api documentation
-//	@termsOfService	http://swagger.io/terms/
-//	@contact.name	API Support
-//	@contact.email	fiber@swagger.io
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-//	@host			localhost:8080
-//	@BasePath		/
+// @title			RBH-Interview APIs
+// @version		1.0
+// @description	Api documentation
+// @termsOfService	http://swagger.io/terms/
+// @contact.name	Nadthapon Sukeewadthana
+// @contact.email	nadthapon1998@gmail.com
+// @license.name	Apache 2.0
+// @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+// @host			localhost:8080
+// @BasePath		/
 func main() {
 	//setup configuration
 	config := configuration.New()
 	database := configuration.NewDatabase(config)
 	//redis := configuration.NewRedis(config)
 
+	logger.InitLogger("")
+
+	defer logger.Sync()
+
 	//repository
 	userRepository := repository.NewUserRepositoryImpl(database)
+	cardRepository := repository.NewCardRepository(database)
+	commentRepository := repository.NewCommentRepository(database)
 
 	//service
 	userService := service.NewUserServiceImpl(&userRepository)
+	cardService := service.NewCardServiceImpl(&cardRepository)
+	commentService := service.NewCommentServiceImpl(&commentRepository)
 
 	//controller
 	userController := controller.NewUserController(&userService, config)
+	cardController := controller.NewCardController(&cardService, config)
+	commentController := controller.NewCommentController(&commentService, config)
 
 	//setup fiber
 	app := fiber.New(configuration.NewFiberConfiguration())
@@ -49,7 +61,10 @@ func main() {
 
 	//routing
 	userController.Route(app)
+	cardController.Route(app)
+	commentController.Route(app)
 
+	logger.Info(context.Background(), "Server started")
 	//start app
 	err := app.Listen(config.Get("SERVER.PORT"))
 	exception.PanicLogging(err)

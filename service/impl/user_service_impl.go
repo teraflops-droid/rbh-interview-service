@@ -3,7 +3,6 @@ package impl
 import (
 	"context"
 	"github.com/teraflops-droid/rbh-interview-service/entity"
-	"github.com/teraflops-droid/rbh-interview-service/exception"
 	"github.com/teraflops-droid/rbh-interview-service/model"
 	"github.com/teraflops-droid/rbh-interview-service/repository"
 	"github.com/teraflops-droid/rbh-interview-service/service"
@@ -19,26 +18,23 @@ type userServiceImpl struct {
 	repository.UserRepository
 }
 
-func (userService *userServiceImpl) Authentication(ctx context.Context, model model.UserModel) entity.User {
+func (userService *userServiceImpl) Authentication(ctx context.Context, model model.UserModel) (*entity.User, error) {
 	userResult, err := userService.UserRepository.Authentication(ctx, model.Username)
 	if err != nil {
-		panic(exception.UnauthorizedError{
-			Message: err.Error(),
-		})
+		return nil, err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(userResult.Password), []byte(model.Password))
 	if err != nil {
-		panic(exception.UnauthorizedError{
-			Message: "incorrect username and password",
-		})
+
 	}
-	return userResult
+	return &userResult, nil
 }
 
-func (userService *userServiceImpl) Register(model model.UserModel) {
+func (userService *userServiceImpl) Register(ctx context.Context, model model.UserModel) error {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(model.Password), bcrypt.DefaultCost)
 	if err != nil {
-		panic(exception.PanicLogging)
+		return err
 	}
-	userService.UserRepository.Create(model.Username, string(hashPassword), "user")
+	userService.UserRepository.Create(ctx, model.Username, string(hashPassword), "USER")
+	return nil
 }

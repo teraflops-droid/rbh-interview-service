@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/teraflops-droid/rbh-interview-service/exception"
 	"os"
 )
 
@@ -19,6 +18,8 @@ func (config *configImpl) Get(key string) string {
 
 func New(filenames ...string) Config {
 	err := godotenv.Load(filenames...)
-	exception.PanicLogging(err)
+	if err != nil {
+		panic(err)
+	}
 	return &configImpl{}
 }

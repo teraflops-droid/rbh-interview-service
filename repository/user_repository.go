@@ -7,6 +7,5 @@ import (
 
 type UserRepository interface {
 	Authentication(ctx context.Context, username string) (entity.User, error)
-	Create(username string, password string, role string)
-	DeleteAll()
+	Create(ctx context.Context, username string, password string, role string)
 }

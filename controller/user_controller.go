@@ -5,7 +5,6 @@ import (
 	"github.com/teraflops-droid/rbh-interview-service/common"
 	"github.com/teraflops-droid/rbh-interview-service/configuration"
 	_ "github.com/teraflops-droid/rbh-interview-service/docs"
-	"github.com/teraflops-droid/rbh-interview-service/exception"
 	"github.com/teraflops-droid/rbh-interview-service/model"
 	"github.com/teraflops-droid/rbh-interview-service/service"
 )
@@ -25,6 +24,7 @@ func (controller UserController) Route(app *fiber.App) {
 }
 
 // Authentication func Authenticate user.
+//
 //	@Description	authenticate user.
 //	@Summary		authenticate user
 //	@Tags			Authenticate user
@@ -36,16 +36,26 @@ func (controller UserController) Route(app *fiber.App) {
 func (controller UserController) Authentication(c *fiber.Ctx) error {
 	var request model.UserModel
 	err := c.BodyParser(&request)
-	exception.PanicLogging(err)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(model.GeneralResponse{
+			Code:    fiber.StatusBadRequest,
+			Message: "Bad Request",
+		})
+	}
+	result, err := controller.UserService.Authentication(c.Context(), request)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(model.GeneralResponse{
+			Code:    fiber.StatusInternalServerError,
+			Message: "Internal Server Error",
+		})
+	}
 
-	result := controller.UserService.Authentication(c.Context(), request)
-	userRole := "user"
-
-	tokenJwtResult := common.GenerateToken(result.Username, userRole, controller.Config)
+	role := result.UserRoles.Role
+	tokenJwtResult := common.GenerateToken(result.Username, role, controller.Config)
 	resultWithToken := map[string]interface{}{
 		"token":    tokenJwtResult,
 		"username": result.Username,
-		"role":     userRole,
+		"role":     role,
 	}
 
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
@@ -56,6 +66,7 @@ func (controller UserController) Authentication(c *fiber.Ctx) error {
 }
 
 // Register func Register user.
+//
 //	@Description	register user.
 //	@Summary		register user
 //	@Tags			Register user
@@ -67,11 +78,22 @@ func (controller UserController) Authentication(c *fiber.Ctx) error {
 func (controller UserController) Register(c *fiber.Ctx) error {
 	var request model.UserModel
 	err := c.BodyParser(&request)
-	exception.PanicLogging(err)
-	controller.UserService.Register(request)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(model.GeneralResponse{
+			Code:    fiber.StatusBadRequest,
+			Message: "Bad Request",
+		})
+	}
+	err = controller.UserService.Register(c.Context(), request)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(model.GeneralResponse{
+			Code:    fiber.StatusInternalServerError,
+			Message: "Internal Server Error",
+		})
+	}
+
 	return c.Status(fiber.StatusOK).JSON(model.GeneralResponse{
 		Code:    200,
 		Message: "Success",
-		Data:    request,
 	})
 }
