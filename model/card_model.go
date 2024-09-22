@@ -9,6 +9,7 @@ type CardRequest struct {
 }
 
 type CardResponse struct {
+	Id          uint   `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`
@@ -17,7 +18,7 @@ type CardResponse struct {
 }
 
 type CardWithCommentsResponse struct {
-	CardId      uint              `json:"card_id"`
+	Id          uint              `json:"id"`
 	Title       string            `json:"title"`
 	Description string            `json:"description"`
 	Status      string            `json:"status"`

@@ -86,6 +86,7 @@ func (cardService *cardServiceImpl) UpdateCard(ctx context.Context, card *model.
 
 func mapCardToResponse(card *entity.Card) model.CardResponse {
 	return model.CardResponse{
+		Id:          card.Id,
 		Title:       card.Title,
 		Description: card.Description,
 		Status:      card.Status,
@@ -117,7 +118,7 @@ func mapCardToCardWithCommentsResponse(card *entity.Card) model.CardWithComments
 	}
 
 	return model.CardWithCommentsResponse{
-		CardId:      card.Id,
+		Id:          card.Id,
 		Title:       card.Title,
 		Description: card.Description,
 		Status:      card.Status,

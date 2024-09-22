@@ -41,9 +41,9 @@ func main() {
 	commentRepository := repository.NewCommentRepository(database)
 
 	//service
-	userService := service.NewUserServiceImpl(&userRepository)
-	cardService := service.NewCardServiceImpl(&cardRepository)
-	commentService := service.NewCommentServiceImpl(&commentRepository)
+	userService := service.NewUserServiceImpl(userRepository)
+	cardService := service.NewCardServiceImpl(cardRepository)
+	commentService := service.NewCommentServiceImpl(commentRepository)
 
 	//controller
 	userController := controller.NewUserController(&userService, config)
@@ -64,8 +64,14 @@ func main() {
 	cardController.Route(app)
 	commentController.Route(app)
 
-	logger.Info(context.Background(), "Server started")
-	//start app
-	err := app.Listen(config.Get("SERVER.PORT"))
-	exception.PanicLogging(err)
+	// Start the app
+	//port := config.Get("SERVER.PORT")
+	//if port == "" {
+	//	log.Fatal("SERVER.PORT is not set in the configuration")
+	//}
+
+	logger.Info(context.Background(), "Server started on port 8080")
+	if err := app.Listen(":8080"); err != nil {
+		exception.PanicLogging(err)
+	}
 }
