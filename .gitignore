@@ -1,0 +1,33 @@
+# Build output
+/bin/
+/obj/
+/*.exe
+/*.exe~
+/*.out
+/*.test
+/*.dSYM
+
+# Vendor directory
+/vendor/
+
+# Go module files
+/go.sum
+/go.mod
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# Other
+*.swp
+*.tmp
+*.bak
+*.old
+.DS_Store
