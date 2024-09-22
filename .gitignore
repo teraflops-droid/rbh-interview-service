@@ -22,8 +22,6 @@
 # Logs
 *.log
 
-# Environment files
-.env
 
 # Other
 *.swp
