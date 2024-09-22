@@ -13,8 +13,8 @@ type commentServiceImpl struct {
 	repository.CommentRepository
 }
 
-func NewCommentServiceImpl(commentRepository *repository.CommentRepository) service.CommentService {
-	return commentServiceImpl{CommentRepository: *commentRepository}
+func NewCommentServiceImpl(commentRepository repository.CommentRepository) service.CommentService {
+	return commentServiceImpl{CommentRepository: commentRepository}
 }
 
 func (c commentServiceImpl) UpdateComment(ctx context.Context, request *model.CommentRequest) (*model.CommentResponse, error) {

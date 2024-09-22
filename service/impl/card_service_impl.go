@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-func NewCardServiceImpl(cardRepository *repository.CardRepository) service.CardService {
-	return &cardServiceImpl{CardRepository: *cardRepository}
+func NewCardServiceImpl(cardRepository repository.CardRepository) service.CardService {
+	return &cardServiceImpl{CardRepository: cardRepository}
 }
 
 type cardServiceImpl struct {
